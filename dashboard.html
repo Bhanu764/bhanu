@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#22c55e">
+	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="apple-touch-icon" href="manifest.webmanifest">
+	<title>Dashboard - Sanitary Map AI</title>
+	<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+	<header class="site-header">
+		<div class="brand">Sanitary Map AI</div>
+		<nav class="nav">
+			<a href="index.html">Home</a>
+			<a href="awareness.html">Awareness</a>
+			<a href="report.html">Report Problem</a>
+			<a href="dashboard.html" class="active">Dashboard</a>
+			<a href="admin.html" id="nav-admin">Admin</a>
+			<button id="btn-install" class="btn" style="display:none">Install</button>
+			<button id="btn-logout" class="btn btn-secondary" style="display:none">Logout</button>
+		</nav>
+	</header>
+	<main class="container">
+		<h1>Sanitary Map</h1>
+		<div class="map-legend">
+			<span><span class="legend-box low"></span>Low</span>
+			<span><span class="legend-box med"></span>Medium</span>
+			<span><span class="legend-box high"></span>High</span>
+		</div>
+		<div id="area-map" class="area-map"></div>
+		<section class="split">
+			<div class="card admin-only">
+				<h2>Recent Reports</h2>
+				<ul id="report-list" class="report-list"></ul>
+			</div>
+			<div class="card admin-only" id="admin-panel" style="display:none">
+				<h2>Admin Panel</h2>
+				<div class="row">
+					<button id="btn-recompute" class="btn">Recompute Area Scores</button>
+				</div>
+				<div class="row">
+					<button id="btn-export" class="btn">Export Data</button>
+					<label class="file-inline">
+						<input type="file" id="import-file" accept="application/json"> Import Data
+					</label>
+				</div>
+				<div class="row">
+					<button id="btn-clear" class="btn" style="border-color:#ef4444;color:#fecaca">Clear Data (local)</button>
+				</div>
+				<div class="row">
+					<button id="btn-clear-backend" class="btn" style="border-color:#ef4444;color:#fecaca">Clear Data (backend)</button>
+				</div>
+			</div>
+		</section>
+	</main>
+	<script src="assets/js/storage.js"></script>
+	<script src="assets/js/ai.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script src="assets/js/dashboard.js"></script>
+</body>
+</html>

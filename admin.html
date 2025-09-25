@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#22c55e">
+	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="apple-touch-icon" href="manifest.webmanifest">
+	<title>Admin Login - Sanitary Map AI</title>
+	<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+	<header class="site-header">
+		<div class="brand">Sanitary Map AI</div>
+		<nav class="nav">
+			<a href="index.html">Home</a>
+			<a href="awareness.html">Awareness</a>
+			<a href="report.html">Report Problem</a>
+			<a href="dashboard.html">Dashboard</a>
+			<a href="admin.html" class="active" id="nav-admin">Admin</a>
+			<button id="btn-install" class="btn" style="display:none">Install</button>
+			<button id="btn-logout" class="btn btn-secondary" style="display:none">Logout</button>
+		</nav>
+	</header>
+	<main class="container">
+		<h1>Admin / NGO Login</h1>
+		<form id="login-form" class="card auth-card">
+			<label>Username
+				<input type="text" id="username" required>
+			</label>
+			<label>Password
+				<input type="password" id="password" required>
+			</label>
+			<button class="btn btn-primary" type="submit">Login</button>
+			<div class="hint">Try: admin / admin123</div>
+		</form>
+		<div id="login-error" class="alert error" style="display:none">Invalid credentials</div>
+	</main>
+	<script src="assets/js/storage.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script>
+	(function(){
+		var form = document.getElementById('login-form');
+		form.addEventListener('submit', function(e){
+			e.preventDefault();
+			var u = document.getElementById('username').value.trim();
+			var p = document.getElementById('password').value.trim();
+			if(u === 'admin' && p === 'admin123'){
+				window.SMAI.setSession({ username: 'admin', role: 'admin' });
+				window.location.href = 'dashboard.html';
+			} else {
+				document.getElementById('login-error').style.display = '';
+			}
+		});
+	})();
+	</script>
+</body>
+</html>

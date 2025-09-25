@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#22c55e">
+	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="apple-touch-icon" href="manifest.webmanifest">
+	<title>Admin Data - Sanitary Map AI</title>
+	<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+	<header class="site-header">
+		<div class="brand">Sanitary Map AI</div>
+		<nav class="nav">
+			<a href="index.html">Home</a>
+			<a href="awareness.html">Awareness</a>
+			<a href="report.html">Report Problem</a>
+			<a href="dashboard.html">Dashboard</a>
+			<a href="admin.html" id="nav-admin">Admin</a>
+			<a href="admin-data.html" class="active">Admin Data</a>
+			<button id="btn-install" class="btn" style="display:none">Install</button>
+			<button id="btn-logout" class="btn btn-secondary" style="display:none">Logout</button>
+		</nav>
+	</header>
+	<main class="container">
+		<h1>All Submissions</h1>
+		<div id="source" class="meta">Loading...</div>
+		<div class="card">
+			<div class="meta" id="total-count">Total reports: 0</div>
+			<ul id="data-list" class="report-list"></ul>
+		</div>
+	</main>
+	<script src="assets/js/storage.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script>
+	(function(){
+		function escapeHtml(str){ return String(str).replace(/[&<>\"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]); }); }
+		document.addEventListener('DOMContentLoaded', function(){
+			// Admin guard
+			var session = window.SMAI.getSession && window.SMAI.getSession();
+			if(!session || session.role !== 'admin'){
+				window.location.href = 'admin.html';
+				return;
+			}
+
+			var backendUrl = (window.SMAI.config && window.SMAI.config.backendUrl) || '';
+			var list = document.getElementById('data-list');
+			var source = document.getElementById('source');
+			var total = document.getElementById('total-count');
+
+			function rowToHtml(r){
+				var lat = r.lat != null ? r.lat : null;
+				var lon = r.lon != null ? r.lon : null;
+				if((lat == null || lon == null) && r.areaId){
+					var area = window.SMAI.storage.ensureAreas().find(function(a){ return a.id === r.areaId; });
+					if(area){ lat = area.lat; lon = area.lon; }
+				}
+				var mapLink = (lat!=null && lon!=null) ? '<a target="_blank" href="https://www.google.com/maps/search/?api=1&query='+lat+','+lon+'">Open map</a>' : '';
+				var img = r.imageData ? '<img src="'+r.imageData+'"/>' : '<img/>';
+				return img + '<div>'+
+					'<div><strong>'+escapeHtml(r.title||'')+'</strong></div>'+
+					'<div class="meta">'+escapeHtml(r.category||'')+' · '+escapeHtml(r.areaId||'')+' · '+escapeHtml(r.createdAt||'')+' '+mapLink+'</div>'+
+					'<div>'+escapeHtml(r.description||'')+'</div>'+
+				'</div>';
+			}
+
+			function setCount(n){ total.textContent = 'Total reports: ' + n; }
+
+			function renderLocal(){
+				source.textContent = 'Source: local (backend unavailable or not configured)';
+				var rows = window.SMAI.storage.loadReports();
+				list.innerHTML = '';
+				setCount(rows.length);
+				rows.forEach(function(r){
+					var li = document.createElement('li'); li.className='report-item';
+					li.innerHTML = rowToHtml(r);
+					list.appendChild(li);
+				});
+			}
+
+			if(backendUrl){
+				fetch(backendUrl + '?type=reports', { cache:'no-store' })
+					.then(function(r){ return r.json(); })
+					.then(function(rows){
+						source.textContent = 'Source: backend ('+rows.length+' rows)';
+						list.innerHTML = '';
+						setCount(rows.length);
+						rows.forEach(function(r){
+							var li = document.createElement('li'); li.className='report-item';
+							li.innerHTML = rowToHtml(r);
+							list.appendChild(li);
+						});
+					})
+					.catch(function(){ renderLocal(); });
+			} else {
+				renderLocal();
+			}
+		});
+	})();
+	</script>
+</body>
+</html>
